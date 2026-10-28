@@ -10,6 +10,7 @@ import {
   Animated,
   Easing,
   StyleProp,
+  StyleSheet,
   ViewStyle,
 } from 'react-native';
 const MotionContext = createContext(true);
@@ -132,3 +133,55 @@ export function usePressMotion() {
   };
   return { scale, pressIn: () => animate(0.97), pressOut: () => animate(1) };
 }
+
+export function ProgressBar({
+  value,
+  label,
+}: {
+  value: number;
+  label: string;
+}) {
+  const reduced = useReducedMotion();
+  const progress = useRef(new Animated.Value(0)).current;
+  const bounded = Math.max(0, Math.min(1, value));
+  useEffect(() => {
+    const animation = Animated.timing(progress, {
+      toValue: bounded,
+      duration: reduced ? 0 : 550,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [bounded, reduced, progress]);
+  return (
+    <Animated.View
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(bounded * 100) }}
+      style={motionStyles.track}
+    >
+      <Animated.View
+        style={[
+          motionStyles.fill,
+          {
+            width: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            }),
+          },
+        ]}
+      />
+    </Animated.View>
+  );
+}
+
+const motionStyles = StyleSheet.create({
+  track: {
+    height: 8,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#303044',
+  },
+  fill: { height: 8, borderRadius: 8, backgroundColor: '#40df83' },
+});

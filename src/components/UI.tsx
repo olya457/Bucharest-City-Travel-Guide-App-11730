@@ -223,42 +223,52 @@ export function PlaceCard({
   onPress: () => void;
   onRemove?: () => void;
 }) {
+  const { scale, pressIn, pressOut } = usePressMotion();
   return (
-    <Reveal style={styles.card} variant="rise">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`View ${place.name}`}
-        onPress={onPress}
-      >
-        <ImageBackground source={place.image} style={styles.cardImage}>
-          <LinearGradient
-            colors={['transparent', '#09090fee']}
-            style={StyleSheet.absoluteFill}
-          />
-          <View style={styles.badgeRow}>
-            <Badge category={place.category} />
-          </View>
-          <Text style={styles.placeTitle}>{place.name}</Text>
-        </ImageBackground>
-        <View style={styles.cardBody}>
-          <Text style={styles.coordinates}>
-            📍 {place.latitude.toFixed(4)}° N · {place.longitude.toFixed(4)}° E
-          </Text>
-          <Text numberOfLines={2} style={styles.preview}>
-            {place.description}
-          </Text>
-        </View>
-      </Pressable>
-      {onRemove && (
+    <Reveal variant="rise">
+      <Animated.View style={[styles.card, { transform: [{ scale }] }]}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Remove ${place.name} from saved places`}
-          onPress={onRemove}
-          style={styles.remove}
+          accessibilityLabel={`View ${place.name}`}
+          onPress={onPress}
+          onPressIn={pressIn}
+          onPressOut={pressOut}
         >
-          <Text style={styles.removeText}>Remove</Text>
+          <ImageBackground
+            source={place.illustrated ? undefined : place.image}
+            style={styles.cardImage}
+          >
+            <LinearGradient
+              colors={['transparent', '#09090fee']}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.badgeRow}>
+              <Badge category={place.category} />
+            </View>
+            {place.illustrated && <Text style={styles.abstractIcon}>◇</Text>}
+            <Text style={styles.placeTitle}>{place.name}</Text>
+          </ImageBackground>
+          <View style={styles.cardBody}>
+            <Text style={styles.coordinates}>
+              📍 {place.latitude.toFixed(4)}° N · {place.longitude.toFixed(4)}°
+              E
+            </Text>
+            <Text numberOfLines={2} style={styles.preview}>
+              {place.description}
+            </Text>
+          </View>
         </Pressable>
-      )}
+        {onRemove && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Remove ${place.name} from saved places`}
+            onPress={onRemove}
+            style={styles.remove}
+          >
+            <Text style={styles.removeText}>Remove</Text>
+          </Pressable>
+        )}
+      </Animated.View>
     </Reveal>
   );
 }
@@ -276,6 +286,7 @@ export function Back({
   );
 }
 export const styles = StyleSheet.create({
+  abstractIcon: { fontSize: 48, color: colors.yellow, marginBottom: 16 },
   screen: { flex: 1, backgroundColor: colors.background },
   fill: { flex: 1 },
   content: { padding: 20, paddingBottom: 32, gap: 18, flexGrow: 1 },

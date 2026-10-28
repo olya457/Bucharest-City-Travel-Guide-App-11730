@@ -81,7 +81,7 @@ const slides = [
   ],
   [
     'Save, Explore & Play',
-    'Bookmark your favorite spots, revisit them anytime, and test your Bucharest knowledge with our interactive quiz.',
+    'Build your day, reorder stops and mark places visited. Your plan, notes and guide stay available offline; maps and linked media need internet.',
   ],
 ];
 export function OnboardingScreen() {

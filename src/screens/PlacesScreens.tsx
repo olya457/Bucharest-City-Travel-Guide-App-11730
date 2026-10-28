@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
   FlatList,
-  ScrollView,
   ImageBackground,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,15 +27,29 @@ import { RootParams, TabsParams } from '../navigation/types';
 import { useGuide } from '../storage/GuideProvider';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
 import { colors, serif } from '../theme';
-import { shareText, openDirections } from '../utils/actions';
+import { practical, contentChecked } from '../data/practical';
+import { normalizeSearch } from '../utils/trip';
+import { Reveal } from '../components/Motion';
+import { s as tripStyles } from './TripScreens';
+import { shareText, openDirections, openExternal } from '../utils/actions';
 type TabProps<T extends keyof TabsParams> = CompositeScreenProps<
   BottomTabScreenProps<TabsParams, T>,
   NativeStackScreenProps<RootParams>
 >;
 export function ExploreScreen({ navigation }: TabProps<'Explore'>) {
   const [category, setCategory] = useState<Category>('All');
+  const [query, setQuery] = useState('');
+  const [kind, setKind] = useState('Any');
   const list = places.filter(
-    p => category === 'All' || p.category === category,
+    p =>
+      (category === 'All' || p.category === category) &&
+      normalizeSearch(`${p.name} ${practical[p.id].area}`).includes(
+        normalizeSearch(query),
+      ) &&
+      (kind === 'Any' ||
+        (kind === 'Free'
+          ? practical[p.id].entry.startsWith('Free')
+          : practical[p.id].setting === kind)),
   );
   return (
     <Screen scroll={false}>
@@ -58,6 +72,29 @@ export function ExploreScreen({ navigation }: TabProps<'Explore'>) {
               </Text>
             </ImageBackground>
             <View style={s.header}>
+              <Button
+                label="Plan a city walk →"
+                onPress={() => navigation.navigate('Routes')}
+              />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Search places or neighbourhoods"
+                placeholderTextColor={colors.muted}
+                accessibilityLabel="Search places or neighbourhoods"
+                style={tripStyles.input}
+                autoCorrect={false}
+              />
+              <View style={tripStyles.wrap}>
+                {['Any', 'Free', 'Indoor', 'Outdoor'].map(k => (
+                  <Button
+                    key={k}
+                    label={k}
+                    secondary={kind !== k}
+                    onPress={() => setKind(k)}
+                  />
+                ))}
+              </View>
               <Filters selected={category} onSelect={setCategory} />
               <Button
                 secondary
@@ -80,6 +117,21 @@ export function ExploreScreen({ navigation }: TabProps<'Explore'>) {
             </View>
           </>
         }
+        ListEmptyComponent={
+          <View style={s.header}>
+            <Title>No matching places</Title>
+            <Body>Try another name, neighbourhood or filter.</Body>
+            <Button
+              label="Reset filters"
+              onPress={() => {
+                setQuery('');
+                setKind('Any');
+                setCategory('All');
+              }}
+            />
+          </View>
+        }
+        keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => (
           <View style={s.cardWrap}>
             <PlaceCard
@@ -92,60 +144,13 @@ export function ExploreScreen({ navigation }: TabProps<'Explore'>) {
     </Screen>
   );
 }
-export function SavedScreen({ navigation }: TabProps<'Saved'>) {
-  const { gutter } = useLayoutMetrics();
-  const { data, toggleSaved } = useGuide();
-  const list = places.filter(p => data.saved.includes(p.id));
-  return (
-    <Screen scroll={false}>
-      {list.length ? (
-        <FlatList
-          data={list}
-          keyExtractor={p => p.id}
-          contentContainerStyle={s.savedList}
-          ListHeaderComponent={
-            <View style={s.savedHeader}>
-              <Title>Saved Places</Title>
-              <Body>{list.length} locations saved</Body>
-            </View>
-          }
-          renderItem={({ item }) => (
-            <PlaceCard
-              place={item}
-              onPress={() => navigation.navigate('Place', { id: item.id })}
-              onRemove={() => toggleSaved(item.id)}
-            />
-          )}
-        />
-      ) : (
-        <ScrollView
-          contentContainerStyle={[s.empty, { padding: gutter }]}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={s.emptyContent}>
-            <Text style={s.emptyIcon}>🔖</Text>
-            <Title serifFont>No Saved Places</Title>
-            <Text style={s.emptyText}>
-              Start exploring and save locations you want to revisit.
-            </Text>
-            <Button
-              style={s.emptyButton}
-              label="Explore Locations →"
-              onPress={() => navigation.navigate('Explore')}
-            />
-          </View>
-        </ScrollView>
-      )}
-    </Screen>
-  );
-}
 export function PlaceScreen({
   route,
   navigation,
 }: NativeStackScreenProps<RootParams, 'Place'>) {
   const { narrow, heroHeight, gutter } = useLayoutMetrics();
   const place = places.find(p => p.id === route.params.id);
-  const { data, toggleSaved } = useGuide();
+  const { data, toggleSaved, addToTrip, toggleVisited } = useGuide();
   if (!place) {
     return (
       <Screen>
@@ -158,7 +163,7 @@ export function PlaceScreen({
   return (
     <Screen style={s.detailContent}>
       <ImageBackground
-        source={place.image}
+        source={place.illustrated ? undefined : place.image}
         style={[s.detailHero, { minHeight: heroHeight, padding: gutter }]}
       >
         <LinearGradient
@@ -167,6 +172,7 @@ export function PlaceScreen({
         />
         <Back onPress={navigation.goBack} />
         <View style={s.detailTitle}>
+          {place.illustrated && <Text style={tripStyles.icon}>◇</Text>}
           <Badge category={place.category} />
           <Text style={s.landmarkTitle}>{place.name}</Text>
         </View>
@@ -182,6 +188,51 @@ export function PlaceScreen({
           </View>
         </View>
         <Body>{place.description}</Body>
+        <Reveal style={tripStyles.card} variant="slide">
+          <Text style={tripStyles.eyebrow}>PLAN YOUR VISIT</Text>
+          <Title>{practical[place.id].area}</Title>
+          <Text selectable style={tripStyles.meta}>
+            {practical[place.id].address}
+          </Text>
+          <Body>
+            Allow about {practical[place.id].minutes} minutes ·{' '}
+            {practical[place.id].setting} · {practical[place.id].entry}
+          </Body>
+          <Body>{practical[place.id].tip}</Body>
+          <Body>
+            Hours, ticket prices and access can change. Check the source before
+            visiting. Map pins are approximate, not guaranteed entrances.
+          </Body>
+          <Button
+            secondary
+            label="Visitor reference ↗"
+            onPress={() => openExternal(practical[place.id].source)}
+          />
+          <Body>
+            Reference reviewed {contentChecked} · Visit duration is an editorial
+            estimate.
+          </Body>
+        </Reveal>
+        <Button
+          label={
+            data.trip.includes(place.id)
+              ? 'In My Trip · open →'
+              : '＋ Add to My Trip'
+          }
+          onPress={() => {
+            addToTrip([place.id]);
+            navigation.navigate('Main', { screen: 'MyTrip' });
+          }}
+        />
+        <Button
+          secondary={!data.visited.includes(place.id)}
+          label={
+            data.visited.includes(place.id)
+              ? '✓ Visited · undo'
+              : 'Mark as visited'
+          }
+          onPress={() => toggleVisited(place.id)}
+        />
         <View style={[s.actions, narrow && s.stackedActions]}>
           <Button
             style={s.flex}

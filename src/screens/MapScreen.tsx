@@ -21,6 +21,7 @@ import {
 } from '../utils/mapRegion';
 import { Reveal } from '../components/Motion';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
+import { validIds } from '../utils/trip';
 import { colors } from '../theme';
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabsParams, 'Map'>,
@@ -29,6 +30,7 @@ type Props = CompositeScreenProps<
 export function MapScreen({ route, navigation }: Props) {
   const { height, narrow, gutter } = useLayoutMetrics();
   const [region, setRegion] = useState(bucharestRegion);
+  const [tripIds, setTripIds] = useState<string[]>([]);
   const [category, setCategory] = useState<Category>('All');
   const [selected, setSelected] = useState<string | undefined>(
     route.params?.placeId,
@@ -36,6 +38,7 @@ export function MapScreen({ route, navigation }: Props) {
   useEffect(() => {
     if (route.params?.placeId) {
       setCategory('All');
+      setTripIds([]);
       setSelected(route.params.placeId);
       const target = places.find(p => p.id === route.params?.placeId);
       if (target) {
@@ -44,18 +47,45 @@ export function MapScreen({ route, navigation }: Props) {
       navigation.setParams({ placeId: undefined });
     }
   }, [route.params?.placeId, navigation]);
+  useEffect(() => {
+    if (route.params?.stopIds) {
+      const ids = validIds(route.params.stopIds);
+      setTripIds(ids);
+      setCategory('All');
+      setSelected(undefined);
+      setRegion(regionForPlaces(places.filter(p => ids.includes(p.id))));
+      navigation.setParams({ stopIds: undefined });
+    }
+  }, [route.params?.stopIds, navigation]);
   const filtered = useMemo(
-    () => places.filter(p => category === 'All' || p.category === category),
-    [category],
+    () =>
+      places.filter(
+        p =>
+          (category === 'All' || p.category === category) &&
+          (!tripIds.length || tripIds.includes(p.id)),
+      ),
+    [category, tripIds],
   );
   const place = places.find(p => p.id === selected);
   return (
     <Screen scroll={false}>
       <View style={s.filters}>
+        {tripIds.length > 0 && (
+          <Button
+            secondary
+            label="My Trip stops · show all places"
+            onPress={() => {
+              setTripIds([]);
+              setCategory('All');
+              setRegion(regionForPlaces(places));
+            }}
+          />
+        )}
         <Filters
           compact
           selected={category}
           onSelect={c => {
+            setTripIds([]);
             setCategory(c);
             setSelected(undefined);
             setRegion(
@@ -100,7 +130,11 @@ export function MapScreen({ route, navigation }: Props) {
                 latitude: item.latitude,
                 longitude: item.longitude,
               }}
-              title={item.name}
+              title={
+                tripIds.length
+                  ? `${tripIds.indexOf(item.id) + 1}. ${item.name}`
+                  : item.name
+              }
               pinColor={
                 item.category === 'Parks'
                   ? colors.green
@@ -151,7 +185,11 @@ export function MapScreen({ route, navigation }: Props) {
                 <Text style={s.closeText}>×</Text>
               </Pressable>
               <View style={s.row}>
-                <Image source={place.image} style={s.image} />
+                {place.illustrated ? (
+                  <Text style={s.closeText}>◇</Text>
+                ) : (
+                  <Image source={place.image} style={s.image} />
+                )}
                 <View style={s.info}>
                   <Text style={s.name}>{place.name}</Text>
                   <Badge category={place.category} />

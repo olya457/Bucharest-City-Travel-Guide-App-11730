@@ -8,9 +8,24 @@ import React, {
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { places } from '../data/places';
+import { validIds, reorder } from '../utils/trip';
 export type QuizResult = { score: number; date: string };
-type Data = { onboarded: boolean; saved: string[]; results: QuizResult[] };
-const initial: Data = { onboarded: false, saved: [], results: [] };
+type Data = {
+  onboarded: boolean;
+  saved: string[];
+  results: QuizResult[];
+  trip: string[];
+  visited: string[];
+  notes: string;
+};
+const initial: Data = {
+  onboarded: false,
+  saved: [],
+  results: [],
+  trip: [],
+  visited: [],
+  notes: '',
+};
 const key = '@bucharest/guide/v1';
 export function parseData(value: string | null): Data {
   if (!value) {
@@ -22,6 +37,9 @@ export function parseData(value: string | null): Data {
   }
   return {
     onboarded: data.onboarded === true,
+    trip: validIds(data.trip),
+    visited: validIds(data.visited),
+    notes: typeof data.notes === 'string' ? data.notes.slice(0, 2000) : '',
     saved: Array.isArray(data.saved)
       ? [
           ...new Set<string>(
@@ -49,6 +67,12 @@ const Context = createContext<{
   completeOnboarding: () => void;
   toggleSaved: (id: string) => void;
   addResult: (score: number) => void;
+  addToTrip: (ids: string[]) => void;
+  removeFromTrip: (id: string) => void;
+  moveStop: (id: string, direction: -1 | 1) => void;
+  toggleVisited: (id: string) => void;
+  setNotes: (notes: string) => void;
+  clearTrip: () => void;
 } | null>(null);
 export function GuideProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState(initial);
@@ -98,6 +122,24 @@ export function GuideProvider({ children }: { children: React.ReactNode }) {
       value={{
         data,
         ready,
+        addToTrip: ids =>
+          update(d => ({ ...d, trip: validIds([...d.trip, ...ids]) })),
+        removeFromTrip: id =>
+          update(d => ({ ...d, trip: d.trip.filter(x => x !== id) })),
+        moveStop: (id, direction) =>
+          update(d => ({ ...d, trip: reorder(d.trip, id, direction) })),
+        toggleVisited: id => {
+          if (places.some(p => p.id === id)) {
+            update(d => ({
+              ...d,
+              visited: d.visited.includes(id)
+                ? d.visited.filter(x => x !== id)
+                : [...d.visited, id],
+            }));
+          }
+        },
+        setNotes: notes => update(d => ({ ...d, notes: notes.slice(0, 2000) })),
+        clearTrip: () => update(d => ({ ...d, trip: [], notes: '' })),
         completeOnboarding: () => update(d => ({ ...d, onboarded: true })),
         toggleSaved: id =>
           update(d => ({

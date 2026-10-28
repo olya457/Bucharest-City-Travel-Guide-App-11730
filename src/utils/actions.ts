@@ -24,3 +24,22 @@ export async function openDirections(place: Place) {
     );
   }
 }
+
+// Only ordinary secure web links are accepted. No scripts, embedded media or downloaded copies.
+export async function openExternal(url: string) {
+  if (!/^https:\/\/[a-z0-9.-]+(?:[/?#]|$)/i.test(url)) {
+    Alert.alert(
+      'Link unavailable',
+      'This resource does not have a supported web address.',
+    );
+    return;
+  }
+  try {
+    await Linking.openURL(url);
+  } catch {
+    Alert.alert(
+      'Could not open link',
+      'Check your internet connection and try again.',
+    );
+  }
+}

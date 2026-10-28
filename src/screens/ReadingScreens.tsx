@@ -9,13 +9,11 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps } from '@react-navigation/native';
 import { Back, Body, Button, Screen, Title } from '../components/UI';
 import articles from '../data/articles.json';
 import facts from '../data/facts.json';
 import { images } from '../data/images';
-import { RootParams, TabsParams } from '../navigation/types';
+import { RootParams } from '../navigation/types';
 import { Reveal } from '../components/Motion';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
 import { colors, serif } from '../theme';
@@ -29,15 +27,14 @@ const articleImages = [
   images.onboarding[2],
   images.onboarding[4],
 ];
-type TabProps<T extends keyof TabsParams> = CompositeScreenProps<
-  BottomTabScreenProps<TabsParams, T>,
-  NativeStackScreenProps<RootParams>
->;
-export function BlogScreen({ navigation }: TabProps<'Blog'>) {
+export function BlogScreen({
+  navigation,
+}: NativeStackScreenProps<RootParams, 'Blog'>) {
   const { narrow } = useLayoutMetrics();
   return (
     <Screen>
       <View style={s.heading}>
+        <Back onPress={navigation.goBack} />
         <Title>Bucharest Blog</Title>
         <Body>Stories, history & culture</Body>
       </View>
@@ -155,10 +152,13 @@ const factCategories = [
     image: images.onboarding[2],
   },
 ];
-export function FactsScreen({ navigation }: TabProps<'Facts'>) {
+export function FactsScreen({
+  navigation,
+}: NativeStackScreenProps<RootParams, 'Facts'>) {
   return (
     <Screen>
       <View style={s.heading}>
+        <Back onPress={navigation.goBack} />
         <Title>Interesting Facts</Title>
         <Body>Discover what makes Bucharest unique</Body>
       </View>

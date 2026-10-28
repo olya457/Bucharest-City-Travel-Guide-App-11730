@@ -267,7 +267,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BucharestCityTravelGuideApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bucharest City Travel Guide";
@@ -301,7 +301,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				INFOPLIST_FILE = BucharestCityTravelGuideApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bucharest City Travel Guide";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;

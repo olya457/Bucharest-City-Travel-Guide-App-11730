@@ -95,6 +95,9 @@ test('saved data excludes invalid records and duplicate place identifiers', () =
     ),
   ).toEqual({
     onboarded: false,
+    trip: [],
+    visited: [],
+    notes: '',
     saved: ['palace'],
     results: [{ score: 4, date: 'today' }],
   });
@@ -149,10 +152,10 @@ test('quiz times out, locks answers, finishes and saves the actual result', asyn
 });
 
 test('all provided content is available with unique identifiers and local images', () => {
-  expect(places).toHaveLength(15);
+  expect(places).toHaveLength(40);
   expect(articles).toHaveLength(7);
   expect(facts).toHaveLength(18);
-  expect(new Set(places.map(p => p.id)).size).toBe(15);
+  expect(new Set(places.map(p => p.id)).size).toBe(40);
   expect(
     places.every(p => p.image && p.latitude > 44 && p.longitude > 26),
   ).toBe(true);

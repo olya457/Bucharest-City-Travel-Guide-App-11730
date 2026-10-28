@@ -9,6 +9,7 @@ export type Place = {
   longitude: number;
   image: ImageSourcePropType;
   description: string;
+  illustrated?: boolean;
 };
 export const categories: Category[] = ['All', 'Historical', 'Parks', 'Museums'];
 export const categoryIcons = {
@@ -23,7 +24,7 @@ export const categoryLabels = {
   Parks: 'Parks & Nature',
   Museums: 'Museums & Culture',
 };
-export const places: Place[] = [
+const originalPlaces: Place[] = [
   {
     id: 'palace',
     name: 'Palace of Parliament',
@@ -175,3 +176,252 @@ export const places: Place[] = [
       'A city history museum housed inside the elegant Suțu Palace. Its exhibitions present the development of Bucharest through historical objects, photographs, maps, documents, artworks, and archaeological discoveries.',
   },
 ];
+
+const additionalPlaces: Place[] = [
+  {
+    id: 'manuc',
+    name: 'Manuc’s Inn',
+    category: 'Historical',
+    latitude: 44.43,
+    longitude: 26.1005,
+    description:
+      'Historic inn with a courtyard. Pair this stop with nearby Old Town streets.',
+    illustrated: true,
+  },
+  {
+    id: 'curtea',
+    name: 'Old Princely Court',
+    category: 'Historical',
+    latitude: 44.4305,
+    longitude: 26.1002,
+    description:
+      'Former princely residence. Plan an exterior stop; archaeological access may be restricted.',
+    illustrated: true,
+  },
+  {
+    id: 'history',
+    name: 'National History Museum of Romania',
+    category: 'Museums',
+    latitude: 44.4314,
+    longitude: 26.0976,
+    description: 'Romanian history collections in the former postal palace.',
+    illustrated: true,
+  },
+  {
+    id: 'military',
+    name: 'National Military Museum',
+    category: 'Museums',
+    latitude: 44.4415,
+    longitude: 26.0767,
+    description: 'Military history collections, uniforms and equipment.',
+    illustrated: true,
+  },
+  {
+    id: 'mnac',
+    name: 'National Museum of Contemporary Art',
+    category: 'Museums',
+    latitude: 44.4274,
+    longitude: 26.0842,
+    description:
+      'Contemporary exhibitions in a separate wing of the Parliament building.',
+    illustrated: true,
+  },
+  {
+    id: 'maps',
+    name: 'National Museum of Maps and Old Books',
+    category: 'Museums',
+    latitude: 44.4567,
+    longitude: 26.0943,
+    description: 'Historic maps and books in a residential neighbourhood.',
+    illustrated: true,
+  },
+  {
+    id: 'geology',
+    name: 'National Geological Museum',
+    category: 'Museums',
+    latitude: 44.4554,
+    longitude: 26.0853,
+    description: 'Minerals, fossils and geological collections.',
+    illustrated: true,
+  },
+  {
+    id: 'carol',
+    name: 'Carol I Park',
+    category: 'Parks',
+    latitude: 44.4121,
+    longitude: 26.096,
+    description: 'Landscaped park with avenues and an elevated monument.',
+    illustrated: true,
+  },
+  {
+    id: 'technical',
+    name: 'Dimitrie Leonida Technical Museum',
+    category: 'Museums',
+    latitude: 44.4152,
+    longitude: 26.097,
+    description: 'Engineering exhibits near the entrance to Carol Park.',
+    illustrated: true,
+  },
+  {
+    id: 'opera',
+    name: 'Romanian National Opera',
+    category: 'Historical',
+    latitude: 44.4358,
+    longitude: 26.0708,
+    description:
+      'Opera venue; the plan allows an exterior stop, not a full performance.',
+    illustrated: true,
+  },
+  {
+    id: 'cotroceni',
+    name: 'National Cotroceni Museum',
+    category: 'Museums',
+    latitude: 44.4334,
+    longitude: 26.0617,
+    description:
+      'Historic palace interiors. Check booking requirements before planning a visit.',
+    illustrated: true,
+  },
+  {
+    id: 'primaverii',
+    name: 'Ceaușescu House',
+    category: 'Museums',
+    latitude: 44.4697,
+    longitude: 26.0927,
+    description:
+      'Former residence of Nicolae Ceaușescu. Check tour availability before visiting.',
+    illustrated: true,
+  },
+  {
+    id: 'zambaccian',
+    name: 'K. H. Zambaccian Museum',
+    category: 'Museums',
+    latitude: 44.4619,
+    longitude: 26.094,
+    description: 'A collector’s home displaying Romanian and French art.',
+    illustrated: true,
+  },
+  {
+    id: 'collections',
+    name: 'Museum of Art Collections',
+    category: 'Museums',
+    latitude: 44.4467,
+    longitude: 26.0918,
+    description:
+      'Several donated art collections brought together in the Romanit Palace.',
+    illustrated: true,
+  },
+  {
+    id: 'pallady',
+    name: 'Theodor Pallady Museum — Melik House',
+    category: 'Museums',
+    latitude: 44.44,
+    longitude: 26.1114,
+    description:
+      'Historic Melik House. The operator currently lists the museum as closed indefinitely; exterior stop only.',
+    illustrated: true,
+  },
+  {
+    id: 'aman',
+    name: 'Theodor Aman Museum',
+    category: 'Museums',
+    latitude: 44.4413,
+    longitude: 26.099,
+    description:
+      'The painter’s former home and studio, with art and decorated interiors.',
+    illustrated: true,
+  },
+  {
+    id: 'storck',
+    name: 'Frederic and Cecilia Storck Museum',
+    category: 'Museums',
+    latitude: 44.4521,
+    longitude: 26.0955,
+    description: 'An artist-family home with sculpture and painting.',
+    illustrated: true,
+  },
+  {
+    id: 'cesianu',
+    name: 'Filipescu-Cesianu House',
+    category: 'Museums',
+    latitude: 44.4525,
+    longitude: 26.0867,
+    description:
+      'A city museum site on Calea Victoriei. Check the current exhibition before visiting.',
+    illustrated: true,
+  },
+  {
+    id: 'revolution',
+    name: 'Revolution Square',
+    category: 'Historical',
+    latitude: 44.4392,
+    longitude: 26.0975,
+    description:
+      'An open square with the Memorial of Rebirth, close to the former Royal Palace.',
+    illustrated: true,
+  },
+  {
+    id: 'militarycircle',
+    name: 'National Military Circle',
+    category: 'Historical',
+    latitude: 44.435,
+    longitude: 26.0975,
+    description:
+      'A monumental building on Calea Victoriei; admire the exterior from public space.',
+    illustrated: true,
+  },
+  {
+    id: 'caru',
+    name: 'Caru’ cu Bere',
+    category: 'Historical',
+    latitude: 44.432,
+    longitude: 26.0984,
+    description:
+      'Historic restaurant facade beside Stavropoleos. Dining is optional and charged separately.',
+    illustrated: true,
+  },
+  {
+    id: 'racovita',
+    name: 'Cesianu-Racoviță Palace',
+    category: 'Historical',
+    latitude: 44.4409,
+    longitude: 26.1004,
+    description:
+      'Historic palace used for art exhibitions; check access before entering.',
+    illustrated: true,
+  },
+  {
+    id: 'lipscani',
+    name: 'Lipscani Street',
+    category: 'Historical',
+    latitude: 44.432,
+    longitude: 26.1009,
+    description: 'A pedestrian street for exploring the Old Town on foot.',
+    illustrated: true,
+  },
+  {
+    id: 'university',
+    name: 'University Square',
+    category: 'Historical',
+    latitude: 44.4356,
+    longitude: 26.1028,
+    description:
+      'Central meeting point for a walk between Suțu Palace and the Old Town.',
+    illustrated: true,
+  },
+  {
+    id: 'victoriei',
+    name: 'Calea Victoriei Promenade',
+    category: 'Historical',
+    latitude: 44.444,
+    longitude: 26.0944,
+    description:
+      'A walking stop on the historic avenue. Use sidewalks and marked crossings.',
+    illustrated: true,
+  },
+].map(p => ({
+  ...p,
+  category: p.category as Place['category'],
+  image: images.onboarding[1],
+}));
+export const places: Place[] = [...originalPlaces, ...additionalPlaces];

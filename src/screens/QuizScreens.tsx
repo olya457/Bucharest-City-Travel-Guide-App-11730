@@ -11,20 +11,16 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps, useIsFocused } from '@react-navigation/native';
-import { Body, Button, Screen, Title } from '../components/UI';
+import { useIsFocused } from '@react-navigation/native';
+import { Back, Body, Button, Screen, Title } from '../components/UI';
 import { sampleQuestions } from '../data/quiz';
 import { images } from '../data/images';
-import { RootParams, TabsParams } from '../navigation/types';
-import { Reveal } from '../components/Motion';
+import { RootParams } from '../navigation/types';
+import { ProgressBar, Reveal } from '../components/Motion';
 import { useLayoutMetrics } from '../hooks/useLayoutMetrics';
 import { colors, serif } from '../theme';
 import { useGuide } from '../storage/GuideProvider';
-type IntroProps = CompositeScreenProps<
-  BottomTabScreenProps<TabsParams, 'Quiz'>,
-  NativeStackScreenProps<RootParams>
->;
+type IntroProps = NativeStackScreenProps<RootParams, 'Quiz'>;
 export function QuizIntroScreen({ navigation }: IntroProps) {
   const { narrow, compact, gutter } = useLayoutMetrics();
   const { data } = useGuide();
@@ -41,6 +37,7 @@ export function QuizIntroScreen({ navigation }: IntroProps) {
         <Text style={s.brain}>🧠</Text>
       </ImageBackground>
       <View style={[s.intro, { padding: gutter }]}>
+        <Back onPress={navigation.goBack} />
         <Title serifFont>Bucharest Knowledge Quiz</Title>
         <Body>
           Think you know Bucharest? Test your knowledge with 5 questions about
@@ -172,9 +169,7 @@ export function QuizGameScreen({
           ◷ {seconds}
         </Text>
       </View>
-      <View style={s.track}>
-        <View style={[s.progress, { width: `${(index / 5) * 100}%` }]} />
-      </View>
+      <ProgressBar value={index / 5} label="Quiz progress" />
       <Reveal replayKey={index} variant="slide" style={s.questionBox}>
         <Text style={s.question}>{current.question}</Text>
       </Reveal>
