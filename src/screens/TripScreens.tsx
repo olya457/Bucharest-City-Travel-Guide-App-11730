@@ -57,12 +57,14 @@ export function RoutesScreen({ navigation }: TabProps<'Routes'>) {
           ).length;
           return (
             <Reveal key={walk.id} delay={index * 45} variant="slide">
-              <LinearGradient
-                colors={
-                  index % 2 ? ['#20302e', '#151b23'] : ['#302c46', '#171923']
-                }
-                style={s.card}
-              >
+              <View style={[s.card, s.walkCard]}>
+                <LinearGradient
+                  pointerEvents="none"
+                  colors={
+                    index % 2 ? ['#20302e', '#151b23'] : ['#302c46', '#171923']
+                  }
+                  style={StyleSheet.absoluteFill}
+                />
                 <Text style={s.icon}>{walk.icon}</Text>
                 <Text style={s.eyebrow}>{walk.theme.toUpperCase()}</Text>
                 <Title>{walk.title}</Title>
@@ -86,7 +88,7 @@ export function RoutesScreen({ navigation }: TabProps<'Routes'>) {
                   label="Explore this walk →"
                   onPress={() => navigation.navigate('Walk', { id: walk.id })}
                 />
-              </LinearGradient>
+              </View>
             </Reveal>
           );
         })}
@@ -400,6 +402,7 @@ export function MyTripScreen({ navigation }: TabProps<'MyTrip'>) {
   );
 }
 export const s = StyleSheet.create({
+  walkCard: { overflow: 'hidden' },
   card: {
     backgroundColor: colors.surface,
     borderColor: colors.border,

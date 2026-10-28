@@ -32,15 +32,16 @@ const icons = {
   Map: '🗺️',
   Guide: '📖',
 };
-function TabIcon({ name }: { name: keyof TabsParams }) {
-  return <Text style={s.icon}>{icons[name]}</Text>;
+type IconProps = { color: string };
+function TabIcon({ name, color }: IconProps & { name: keyof TabsParams }) {
+  return <Text style={[s.icon, { color }]}>{icons[name]}</Text>;
 }
 const tabIcons = {
-  Explore: () => <TabIcon name="Explore" />,
-  Routes: () => <TabIcon name="Routes" />,
-  MyTrip: () => <TabIcon name="MyTrip" />,
-  Map: () => <TabIcon name="Map" />,
-  Guide: () => <TabIcon name="Guide" />,
+  Explore: ({ color }: IconProps) => <TabIcon name="Explore" color={color} />,
+  Routes: ({ color }: IconProps) => <TabIcon name="Routes" color={color} />,
+  MyTrip: ({ color }: IconProps) => <TabIcon name="MyTrip" color={color} />,
+  Map: ({ color }: IconProps) => <TabIcon name="Map" color={color} />,
+  Guide: ({ color }: IconProps) => <TabIcon name="Guide" color={color} />,
 };
 function Tabs() {
   const insets = useSafeAreaInsets();
@@ -52,7 +53,7 @@ function Tabs() {
         animation: reduced ? 'none' : 'fade',
         tabBarLabelPosition: 'below-icon',
         tabBarActiveTintColor: colors.yellow,
-        tabBarInactiveTintColor: colors.dim,
+        tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
           backgroundColor: '#10101b',
           borderTopColor: '#20202b',
