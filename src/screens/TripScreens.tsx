@@ -4,7 +4,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import MapView, { Marker } from 'react-native-maps';
 import { Back, Body, Button, Screen, Title } from '../components/UI';
 import { ProgressBar, Reveal } from '../components/Motion';
 import { walks } from '../data/routes';
@@ -13,7 +12,6 @@ import { practical } from '../data/practical';
 import { useGuide } from '../storage/GuideProvider';
 import { RootParams, TabsParams } from '../navigation/types';
 import { duration, tripSummary } from '../utils/trip';
-import { regionForPlaces } from '../utils/mapRegion';
 import { shareText } from '../utils/actions';
 import { colors } from '../theme';
 type TabProps<T extends keyof TabsParams> = CompositeScreenProps<
@@ -101,7 +99,6 @@ export function WalkScreen({
 }: NativeStackScreenProps<RootParams, 'Walk'>) {
   const walk = walks.find(w => w.id === route.params.id);
   const { data, addToTrip, toggleVisited } = useGuide();
-  const [showMap, setShowMap] = useState(false);
   if (!walk) {
     return (
       <Screen>
@@ -140,35 +137,6 @@ export function WalkScreen({
           navigation.navigate('Main', { screen: 'MyTrip' });
         }}
       />
-      <Button
-        secondary
-        label={showMap ? 'Hide stop map' : 'Show stop map'}
-        onPress={() => setShowMap(v => !v)}
-      />
-      {showMap && (
-        <Reveal variant="zoom">
-          <MapView
-            style={s.map}
-            initialRegion={regionForPlaces(summary.stops)}
-            userInterfaceStyle="dark"
-          >
-            {summary.stops.map((p, i) => (
-              <Marker
-                key={p.id}
-                coordinate={p}
-                title={`${i + 1}. ${p.name}`}
-                onCalloutPress={() =>
-                  navigation.navigate('Place', { id: p.id })
-                }
-              />
-            ))}
-          </MapView>
-          <Body>
-            Approximate stop locations. Online map; use public entrances and
-            marked crossings.
-          </Body>
-        </Reveal>
-      )}
       <Text style={s.meta}>
         {done} of {walk.stops.length} visited
       </Text>
@@ -249,11 +217,6 @@ export function MyTripScreen({ navigation }: TabProps<'MyTrip'>) {
           <Text style={s.meta}>
             {done}/{data.trip.length} visited
           </Text>
-          <Button
-            secondary
-            label="Show my stops on map →"
-            onPress={() => navigation.navigate('Map', { stopIds: data.trip })}
-          />
           <ProgressBar
             value={done / data.trip.length}
             label="My Trip progress"
@@ -393,8 +356,9 @@ export function MyTripScreen({ navigation }: TabProps<'MyTrip'>) {
             </>
           )}
           <Body>
-            Offline: place information, walks, notes and progress. Maps, videos,
-            websites and external directions need a connection.
+            Offline: place information, walks, notes and progress. External
+            directions, videos, websites and external directions need a
+            connection.
           </Body>
         </>
       )}
@@ -420,7 +384,6 @@ export const s = StyleSheet.create({
   icon: { fontSize: 42, color: colors.yellow },
   meta: { color: colors.text, fontSize: 13, lineHeight: 21 },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  map: { height: 280, borderRadius: 20 },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,

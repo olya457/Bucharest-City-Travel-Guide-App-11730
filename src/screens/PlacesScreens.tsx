@@ -201,7 +201,7 @@ export function PlaceScreen({
           <Body>{practical[place.id].tip}</Body>
           <Body>
             Hours, ticket prices and access can change. Check the source before
-            visiting. Map pins are approximate, not guaranteed entrances.
+            visiting. Use public entrances and check access with the venue.
           </Body>
           <Button
             secondary
@@ -250,17 +250,6 @@ export function PlaceScreen({
             secondary={!saved}
             label={saved ? '🔖 Saved' : '🔖 Save'}
             onPress={() => toggleSaved(place.id)}
-          />
-          <Button
-            style={s.flex}
-            secondary
-            label="🗺️ Map"
-            onPress={() =>
-              navigation.navigate('Main', {
-                screen: 'Map',
-                params: { placeId: place.id },
-              })
-            }
           />
         </View>
         <Button

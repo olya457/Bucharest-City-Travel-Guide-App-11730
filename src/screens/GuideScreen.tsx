@@ -24,7 +24,7 @@ const advice = [
   ],
   [
     'A day without mobile data',
-    'Your place descriptions, walks, saved places, plan and notes are bundled or stored locally. Open your plan before setting out. Map tiles, directions and linked resources require internet.',
+    'Your place descriptions, walks, saved places, plan and notes are bundled or stored locally. Open your plan before setting out. External directions and linked resources require internet.',
   ],
   [
     'Travelling at your own pace',

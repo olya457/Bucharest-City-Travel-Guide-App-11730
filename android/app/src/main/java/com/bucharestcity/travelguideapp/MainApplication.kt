@@ -1,4 +1,4 @@
-package com.bucharestcitytravelguideapp
+package com.bucharestcity.travelguideapp
 
 import android.app.Application
 import com.facebook.react.PackageList

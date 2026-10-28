@@ -4,7 +4,7 @@ export type TabsParams = {
   MyTrip: undefined;
   Routes: undefined;
   Guide: undefined;
-  Map: { placeId?: string; stopIds?: string[] } | undefined;
+  Bucharest: undefined;
 };
 export type RootParams = {
   Main: NavigatorScreenParams<TabsParams>;

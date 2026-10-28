@@ -20,7 +20,7 @@ import {
 } from '../screens/QuizScreens';
 import { RoutesScreen, WalkScreen, MyTripScreen } from '../screens/TripScreens';
 import { GuideScreen } from '../screens/GuideScreen';
-import { MapScreen } from '../screens/MapScreen';
+import { BucharestScreen } from '../screens/BucharestScreen';
 import { useReducedMotion } from '../components/Motion';
 import { colors } from '../theme';
 const Stack = createNativeStackNavigator<RootParams>();
@@ -29,7 +29,7 @@ const icons = {
   Explore: '🔭',
   Routes: '🧭',
   MyTrip: '✦',
-  Map: '🗺️',
+  Bucharest: '🏛️',
   Guide: '📖',
 };
 type IconProps = { color: string };
@@ -40,7 +40,9 @@ const tabIcons = {
   Explore: ({ color }: IconProps) => <TabIcon name="Explore" color={color} />,
   Routes: ({ color }: IconProps) => <TabIcon name="Routes" color={color} />,
   MyTrip: ({ color }: IconProps) => <TabIcon name="MyTrip" color={color} />,
-  Map: ({ color }: IconProps) => <TabIcon name="Map" color={color} />,
+  Bucharest: ({ color }: IconProps) => (
+    <TabIcon name="Bucharest" color={color} />
+  ),
   Guide: ({ color }: IconProps) => <TabIcon name="Guide" color={color} />,
 };
 function Tabs() {
@@ -72,7 +74,7 @@ function Tabs() {
         component={MyTripScreen}
         options={{ title: 'My Trip' }}
       />
-      <Tab.Screen name="Map" component={MapScreen} />
+      <Tab.Screen name="Bucharest" component={BucharestScreen} />
       <Tab.Screen name="Guide" component={GuideScreen} />
     </Tab.Navigator>
   );

@@ -16,11 +16,6 @@ import { Button } from '../src/components/UI';
 import { openExternal } from '../src/utils/actions';
 import { Alert, Linking } from 'react-native';
 
-jest.mock('react-native-maps', () => ({
-  __esModule: true,
-  default: 'MapView',
-  Marker: 'Marker',
-}));
 beforeEach(() => jest.clearAllMocks());
 
 test('old saved data migrates without losing favourites and corrupt trip IDs are removed', () => {

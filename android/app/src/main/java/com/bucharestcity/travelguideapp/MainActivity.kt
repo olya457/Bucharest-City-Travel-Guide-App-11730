@@ -1,4 +1,4 @@
-package com.bucharestcitytravelguideapp
+package com.bucharestcity.travelguideapp
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
